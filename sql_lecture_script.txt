@@ -1,0 +1,290 @@
+Basic SELECT Statement
+-- world.db
+
+
+SELECT statments are at the heart of SQL retrieval statements. 
+They retrive data from a data source
+
+
+SELECT 'Hello, World';              <-- retrieving data directly from the string
+SELECT 'Hello, World' AS Result;    <-- retrieving data using an alias
+SELECT * FROM Country;              <-- retrieving ALL data from the Country table in the world.db
+SELECT * FROM Country ORDER BY Name;    <-- retrieve data above but now order by name
+SELECT Name, LifeExpectancy FROM Country ORDER BY Name; <-- retrie individual fields and then order
+SELECT Name, LifeExpectancy AS "Life Expectancy" FROM Country ORDER BY Name; <-- AS allows for aliasing
+
+Row Selection
+-- world.db
+
+SELECT Name, Continent, Region FROM Country;                                                           
+SELECT Name, Continent, Region FROM Country WHERE Continent = 'Europe';
+SELECT Name, Continent, Region FROM Country WHERE Continent = 'Europe' ORDER BY Name;
+SELECT Name, Continent, Region FROM Country WHERE Continent = 'Europe' ORDER BY Name LIMIT 5;
+SELECT Name, Continent, Region FROM Country WHERE Continent = 'Europe' ORDER BY Name LIMIT 5 OFFSET 5;
+
+Column Selection
+-- world.db
+
+SELECT * from Country;
+SELECT Name, Continent, Region from Country;
+SELECT Name AS Country, Continent, Region from Country;
+SELECT Name AS Country, Region, Continent from Country; <-- Selecting with aliasing
+
+Row Counts
+-- world.db
+
+The COUNT keyword in analogous to the .value_counts() keyword in pandas
+
+SELECT COUNT(*) FROM Country;
+SELECT COUNT(*) FROM Country WHERE Population > 1000000;
+SELECT COUNT(*) FROM Country WHERE Population > 100000000;
+SELECT COUNT(*) FROM Country WHERE Population > 100000000 AND Continent = 'Europe' ;
+
+SELECT COUNT(*) FROM Country;
+SELECT COUNT(LifeExpectancy) FROM Country;
+
+Manipulating Data Table
+-- test.db
+
+SELECT * FROM customer;
+INSERT INTO customer (name, address, city, state, zip) VALUES ('Fred Flintstone', '123 Cobblestone Way', 'Bedrock', 'CA', '91234');
+INSERT INTO customer (name, city, state) VALUES ('Jimi Hendrix', 'Renton', 'WA');
+
+-- test.db
+
+SELECT * FROM customer;
+UPDATE customer SET address = '123 Music Avenue', zip = '98056' WHERE id = 5;
+UPDATE customer SET address = '2603 S Washington St', zip = '98056' WHERE id = 5;
+UPDATE customer SET address = NULL, zip = NULL WHERE id = 5;
+
+-- test.db
+
+SELECT * FROM customer WHERE id = 4;
+DELETE FROM customer WHERE id = 4;
+SELECT * FROM customer;
+DELETE FROM customer WHERE id = 5;
+SELECT * FROM customer;
+
+Create/Edit Tables
+-- :memory:
+
+CREATE TABLE test (
+  a INTEGER,
+  b TEXT
+);
+
+INSERT INTO test VALUES ( 1, 'a' );
+INSERT INTO test VALUES ( 2, 'b' );
+INSERT INTO test VALUES ( 3, 'c' );
+SELECT * FROM test;
+
+-- :memory:
+
+CREATE TABLE test ( a TEXT, b TEXT );
+INSERT INTO test VALUES ( 'one', 'two' );
+SELECT * FROM test;
+DROP TABLE test;
+DROP TABLE IF EXISTS test;
+
+-- test.db
+
+CREATE TABLE test ( a INTEGER, b TEXT, c TEXT );
+SELECT * FROM test;
+
+INSERT INTO test VALUES ( 1, 'This', 'Right here!' ); 
+INSERT INTO test ( b, c ) VALUES ( 'That', 'Over there!' ); 
+INSERT INTO test DEFAULT VALUES;
+INSERT INTO test ( a, b, c ) SELECT id, name, description from item;
+
+
+-- test.db
+
+SELECT * FROM test;
+DELETE FROM test WHERE a = 3;
+SELECT * FROM test WHERE a = 1;
+DELETE FROM test WHERE a = 1;
+
+-- test.db
+
+SELECT * FROM test;
+SELECT * FROM test WHERE a = NULL;
+SELECT * FROM test WHERE a IS NULL;
+SELECT * FROM test WHERE a IS NOT NULL;
+INSERT INTO test ( a, b, c ) VALUES ( 0, NULL, '' );
+SELECT * FROM test WHERE b IS NULL;
+SELECT * FROM test WHERE b = '';
+SELECT * FROM test WHERE c = '';
+SELECT * FROM test WHERE c IS NULL;
+
+DROP TABLE test;
+CREATE TABLE test (
+  a INTEGER NOT NULL,
+  b TEXT NOT NULL,
+  c TEXT
+);
+
+INSERT INTO test VALUES ( 1, 'this', 'that' );
+SELECT * FROM test;
+
+INSERT INTO test ( b, c ) VALUES ( 'one', 'two' );
+INSERT INTO test ( a, c ) VALUES ( 1, 'two' );
+INSERT INTO test ( a, b ) VALUES ( 1, 'two' );
+DROP TABLE test;
+
+-- :memory:
+
+CREATE TABLE test ( a TEXT, b TEXT, c TEXT );
+INSERT INTO test ( a, b ) VALUES ( 'one', 'two' );
+SELECT * FROM test;
+
+CREATE TABLE test ( a TEXT, b TEXT, c TEXT NOT NULL );
+CREATE TABLE test ( a TEXT, b TEXT, c TEXT DEFAULT 'panda' );
+CREATE TABLE test ( a TEXT UNIQUE, b TEXT, c TEXT DEFAULT 'panda' );
+CREATE TABLE test ( a TEXT UNIQUE NOT NULL, b TEXT, c TEXT DEFAULT 'panda' );
+
+-- test.db
+
+CREATE TABLE test ( a TEXT, b TEXT, c TEXT );
+INSERT INTO test VALUES ( 'one', 'two', 'three');
+INSERT INTO test VALUES ( 'two', 'three', 'four');
+INSERT INTO test VALUES ( 'three', 'four', 'five');
+SELECT * FROM test;
+
+ALTER TABLE test ADD d TEXT;
+ALTER TABLE test ADD e TEXT DEFAULT 'panda';
+
+DROP TABLE test;
+
+Using ID's
+-- :memory:
+
+CREATE TABLE test (
+  id INTEGER PRIMARY KEY,
+  a INTEGER,
+  b TEXT
+);
+INSERT INTO test (a, b) VALUES ( 10, 'a' );
+INSERT INTO test (a, b) VALUES ( 11, 'b' );
+INSERT INTO test (a, b) VALUES ( 12, 'c' );
+SELECT * FROM test;
+
+Ordering and Filtering
+-- world.db
+
+SELECT * FROM Country;
+SELECT Name, Continent, Population FROM Country WHERE Population < 100000 ORDER BY Population DESC;
+SELECT Name, Continent, Population FROM Country WHERE Population < 100000 OR Population IS NULL ORDER BY Population DESC;
+SELECT Name, Continent, Population FROM Country WHERE Population < 100000 AND Continent = 'Oceania' ORDER BY Population DESC;
+SELECT Name, Continent, Population FROM Country WHERE Name LIKE '%island%' ORDER BY Name;
+SELECT Name, Continent, Population FROM Country WHERE Continent IN ( 'Europe', 'Asia' ) ORDER BY Name;
+
+Distinct Values
+-- world.db
+
+SELECT Continent FROM Country;
+SELECT DISTINCT Continent FROM Country;
+Using the SELECT DISTINCT statement, you will get only unique results. 
+
+-- test.db
+
+CREATE TABLE test ( a int, b int );
+INSERT INTO test VALUES ( 1, 1 );
+INSERT INTO test VALUES ( 2, 1 );
+INSERT INTO test VALUES ( 3, 1 );
+INSERT INTO test VALUES ( 4, 1 );
+INSERT INTO test VALUES ( 5, 1 );
+INSERT INTO test VALUES ( 1, 2 );
+INSERT INTO test VALUES ( 1, 2 );
+INSERT INTO test VALUES ( 1, 2 );
+INSERT INTO test VALUES ( 1, 2 );
+INSERT INTO test VALUES ( 1, 2 );
+SELECT * FROM test;
+
+SELECT DISTINCT a FROM test;
+SELECT DISTINCT b FROM test;
+SELECT DISTINCT a, b FROM test;
+
+DROP TABLE test;
+
+-- Test JOIN with test tables
+-- test.db
+
+-- join example tables, left and right
+CREATE TABLE left ( id INTEGER, description TEXT );
+CREATE TABLE right ( id INTEGER, description TEXT );
+
+INSERT INTO left VALUES ( 1, 'left 01' );
+INSERT INTO left VALUES ( 2, 'left 02' );
+INSERT INTO left VALUES ( 3, 'left 03' );
+INSERT INTO left VALUES ( 4, 'left 04' );
+INSERT INTO left VALUES ( 5, 'left 05' );
+INSERT INTO left VALUES ( 6, 'left 06' );
+INSERT INTO left VALUES ( 7, 'left 07' );
+INSERT INTO left VALUES ( 8, 'left 08' );
+INSERT INTO left VALUES ( 9, 'left 09' );
+
+INSERT INTO right VALUES ( 6, 'right 06' );
+INSERT INTO right VALUES ( 7, 'right 07' );
+INSERT INTO right VALUES ( 8, 'right 08' );
+INSERT INTO right VALUES ( 9, 'right 09' );
+INSERT INTO right VALUES ( 10, 'right 10' );
+INSERT INTO right VALUES ( 11, 'right 11' );
+INSERT INTO right VALUES ( 11, 'right 12' );
+INSERT INTO right VALUES ( 11, 'right 13' );
+INSERT INTO right VALUES ( 11, 'right 14' );
+
+SELECT * FROM left;
+SELECT * FROM right;
+
+SELECT l.description AS left, r.description AS right
+  FROM left AS l
+  JOIN right AS r ON l.id = r.id
+  ;
+
+-- restore database
+DROP TABLE left;
+DROP TABLE right;
+
+-- sale example
+SELECT * FROM sale;
+SELECT * FROM item;
+
+SELECT s.id AS sale, i.name, s.price 
+  FROM sale AS s
+  JOIN item AS i ON s.item_id = i.id
+  ;
+
+SELECT s.id AS sale, s.date, i.name, i.description, s.price 
+  FROM sale AS s
+  JOIN item AS i ON s.item_id = i.id
+  ;
+
+-- More Joins
+-- test.db
+
+SELECT * FROM customer;
+SELECT * FROM item;
+SELECT * FROM sale;
+
+SELECT i.name AS Item, c.name AS Cust, s.price AS Price
+  FROM sale AS s
+  JOIN item AS i ON s.item_id = i.id
+  JOIN customer AS c ON s.customer_id = c.id
+  ORDER BY Cust, Item
+;
+
+-- a customer without sales
+INSERT INTO customer ( name ) VALUES ( 'Jane Smith' );
+SELECT * FROM customer;
+
+-- left joins
+SELECT c.name AS Cust, c.zip, i.name AS Item, i.description, s.quantity AS Quan, s.price AS Price
+  FROM customer AS c
+  LEFT JOIN sale AS s ON s.customer_id = c.id
+  LEFT JOIN item AS i ON s.item_id = i.id
+  ORDER BY Cust, Item
+;
+
+-- restore database
+DELETE FROM customer WHERE id = 4;
+
